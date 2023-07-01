@@ -144,15 +144,17 @@ const imageSquareSize = 24;
 const size = 40;
 const framePerSecond = 24;
 const gameSpeed = 2;
-const canvas = document.getElementById("gameBoardCanvas");
+const gameBoardCanvas = document.getElementById("gameBoardCanvas");
+const holdShapeCanvas = document.getElementById("holdShapeCanvas");
 const nextShapeCanvas = document.getElementById("nextShapeCanvas");
 const scoreCanvas = document.getElementById("scoreCanvas");
 const image = document.getElementById("image");
-const ctx = canvas.getContext("2d");
+const ctx = gameBoardCanvas.getContext("2d");
+const hctx = holdShapeCanvas.getContext("2d");
 const nctx = nextShapeCanvas.getContext("2d");
 const sctx = scoreCanvas.getContext("2d");
-const squareCountX = canvas.width / size;
-const squareCountY = canvas.height / size;
+const squareCountX = gameBoardCanvas.width / size;
+const squareCountY = gameBoardCanvas.height / size;
 
 // 0 = purple, 24 = blue, 48 = cyan, 72 = green, 96 = yellow, 120 = red, 144 = pink
 const shapes = [
@@ -196,6 +198,7 @@ const shapes = [
 let gameMap;
 let gameOver;
 let currentShape;
+let holdShape;
 let nextShape;
 let score;
 let swapped;
@@ -236,12 +239,22 @@ let swap = () => {
   }
   swapped = true;
   let placeHolder = currentShape;
-  currentShape = nextShape;
-  currentShape.x = defaultX;
-  currentShape.y = 0;
-  nextShape.x = defaultX;
-  nextShape.y = 0;
-  nextShape = placeHolder;
+  if (holdShape.template.length === 0) { // if holdShape is blank (first swap)
+    currentShape = nextShape;
+    holdShape.x = defaultX;
+    holdShape.y = 0;
+    holdShape = placeHolder;
+    nextShape = getRandomShape();
+    return;
+  }
+  else { // holdShape is an actual piece...
+    currentShape = holdShape;
+    currentShape.x = defaultX;
+    currentShape.y = 0;
+    holdShape.x = defaultX;
+    holdShape.y = 0;
+    holdShape = placeHolder;
+  }
 }
 
 let update = () => {
@@ -293,13 +306,13 @@ let drawRect = (x, y, width, height, color) => {
 };
 
 let drawBackground = () => {
-  drawRect(0, 0, canvas.width, canvas.height, "#bca0dc");
+  drawRect(0, 0, gameBoardCanvas.width, gameBoardCanvas.height, "#bca0dc");
   for (let i = 0; i < squareCountX + 1; i++) {
     drawRect(
       size * i - gameBoardLineThickness,
       0,
       gameBoardLineThickness,
-      canvas.height,
+      gameBoardCanvas.height,
       "white"
     );
   }
@@ -308,7 +321,7 @@ let drawBackground = () => {
     drawRect(
       0,
       size * i - gameBoardLineThickness,
-      canvas.width,
+      gameBoardCanvas.width,
       gameBoardLineThickness,
       "white"
     );
@@ -354,16 +367,17 @@ let drawSquares = () => {
   }
 };
 
-let drawNextShape = () => {
-  nctx.fillStyle = "#bca0dc";
-  nctx.fillRect(0, 0, nextShapeCanvas.width, nextShapeCanvas.height);
-  for (let i = 0; i < nextShape.template.length; i++) {
-    for (let j = 0; j < nextShape.template.length; j++) {
-      if (nextShape.template[i][j] == 0) continue;
-      nctx.drawImage(
+let drawShape = (shape, ctx, canvas) => {
+  ctx.fillStyle = "#bca0dc";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  for (let i = 0; i < shape.template.length; i++) {
+    for (let j = 0; j < shape.template.length; j++) {
+      if (shape.template[i][j] == 0) continue;
+      ctx.drawImage(
         image,
-        nextShape.imageX,
-        nextShape.imageY,
+        shape.imageX,
+        shape.imageY,
         imageSquareSize,
         imageSquareSize,
         size * i,
@@ -385,15 +399,16 @@ let drawScore = () => {
 let drawGameOver = () => {
   ctx.font = "64px Poppins";
   ctx.fillStyle = "black";
-  ctx.fillText("Game Over!", 10, canvas.height / 2);
+  ctx.fillText("Game Over!", 10, gameBoardCanvas.height / 2);
 };
 
 let draw = () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, gameBoardCanvas.width, gameBoardCanvas.height);
   drawBackground();
   drawSquares();
   drawCurrentTetris();
-  drawNextShape();
+  drawShape(holdShape, hctx, holdShapeCanvas);
+  drawShape(nextShape, nctx, nextShapeCanvas);
   drawScore();
   if (gameOver) {
     drawGameOver();
@@ -417,6 +432,7 @@ let resetVars = () => {
   swapped = false;
   gameOver = false;
   currentShape = getRandomShape();
+  holdShape = Object.create(new Tetris(0,0,[]));
   nextShape = getRandomShape();
   gameMap = initialTwoDArr;
 };

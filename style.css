@@ -1,6 +1,25 @@
 body {
-    text-align: center;
     background-color: #f0ceff;
+}
+
+.game {
+    display: flex;
+    justify-content: center;
+    gap: 1%;
+}
+
+.rightCol {
+    display: flex;
+    flex-direction: column;
+}
+
+canvas {
+    align-self: flex-start;
+    margin-bottom: 10px;
+}
+
+#holdShapeCanvas {
+    
 }
 
 #gameBoardCanvas {
@@ -8,12 +27,11 @@ body {
 }
 
 #nextShapeCanvas {
-    position: absolute; 
-    top: 10
+    
 }
 
 #scoreCanvas {
-    position: absolute; top: 220
+    
 }
 
 #resetButton {
