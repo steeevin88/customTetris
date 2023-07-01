@@ -1,0 +1,31 @@
+body {
+    text-align: center;
+    background-color: #f0ceff;
+}
+
+#gameBoardCanvas {
+
+}
+
+#nextShapeCanvas {
+    position: absolute; 
+    top: 10
+}
+
+#scoreCanvas {
+    position: absolute; top: 220
+}
+
+#resetButton {
+    width: 64px; 
+    height: 64px; 
+    border-radius: 50%; 
+    background-color: gray; 
+    border: 0px
+}
+button:hover {
+    background-color: #bca0dc !important;
+  }
+button:active {
+    background-color: #9969d0 !important;
+  }
