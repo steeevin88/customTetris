@@ -1,11 +1,16 @@
 // Things to do
-// 1. Make better delay on pieces when they're at the bottom
-  // ex) arrow keys adds a bit of time...
-// 2. Implement custom pieces
-// 3. Hold Window + Next Piece Window
-  // right now, holds swap the next piece with the current piece
-    // this isn't normal... so figure it out
-    // there needs to be a separate hold window on the left, and a queuedPieces window on the right
+// 1. Implement Level/ Speed System
+  // on certain score thresholds, speed the game up
+    // this includes reducing the time to place (?) --> maybe not, at high speeds I think moving pieces around sometimes helps
+    // score multipliers --> the higher the level, the higher the point multiplier
+// 2. Implement Custom Pieces
+  // allow users to choose their own 7 tetrominoes as they play
+  // default --> original 7 pieces
+    // allows users to reset/ clear the pieces they piece, left click to select, right click to deselect
+    // allows users to pick the color they want (out of 7...)
+// 3. Create better game over screen  
+  // right now it's just a text wall...
+// 4. Refine gameboard UI
 
 class Tetris {
   constructor(imageX, imageY, template) {
@@ -287,7 +292,7 @@ let update = () => {
       // Delay before placing the shape
       setTimeout(() => {
         update();
-      }, 3000); // Adjust the delay time as needed (in milliseconds)
+      }, 10000);
     }
   }
 };
@@ -446,6 +451,15 @@ window.addEventListener("keydown", (event) => {
   else if (event.key === " ") skip();
 });
 
+let startGame = () => {
+  resetVars();
+  gameLoop();
+  document.getElementById("originalGameButton").disabled = true;
+  document.getElementById("originalGameButton").classList.add("hidden");
+  document.getElementById("resetButton").classList.remove("hidden");
+  document.getElementsByClassName("startMenu")[0].classList.add("hidden");
+}
 
-resetVars();
-gameLoop();
+let customPiecesUI = () => {
+
+}

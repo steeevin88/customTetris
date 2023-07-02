@@ -3,7 +3,15 @@
         <title> Customized Tetris Game </title>
     </head>
     <body>
-      <div class="game">
+      <div class="startMenu"> 
+        <button id="originalGameButton" onClick="startGame()">
+          <p>Play the original Tetris</p>
+        </button>
+        <button id="originalGameButton" onClick="customPieceUI()">
+          <p>Select your own pieces</p>
+        </button>
+      </div>
+      <div id="game" class="hidden">
         <div class="leftCol">
           <canvas id="holdShapeCanvas" width="200" height="200"></canvas>
         </div>
@@ -13,7 +21,7 @@
         <div class = "rightCol">
           <canvas id="nextShapeCanvas" width="200" height="200"></canvas>
           <canvas id="scoreCanvas" width="200" height="200"></canvas>
-          <button id="resetButton" onClick="resetVars()">
+          <button id="resetButton" class="hidden" onClick="resetVars()">
             <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
               <use class="ytp-svg-shadow" xlink:href="#ytp-id-54"></use>
               <path

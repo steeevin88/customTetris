@@ -2,10 +2,34 @@ body {
     background-color: #f0ceff;
 }
 
-.game {
+.startMenu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+#originalGameButton {
+    margin: 10%;
+    height: 70%;
+    width: 50%;
+    background-color: gray; 
+    border: none;
+  }
+
+#game {
     display: flex;
     justify-content: center;
     gap: 1%;
+}
+
+.leftCol {
+    display: flex;
+    flex-direction: column;
+}
+
+.middleCol {
+
 }
 
 .rightCol {
@@ -41,9 +65,14 @@ canvas {
     background-color: gray; 
     border: 0px
 }
+
 button:hover {
     background-color: #bca0dc !important;
   }
 button:active {
     background-color: #9969d0 !important;
   }
+
+.hidden {
+    display: none;
+}
