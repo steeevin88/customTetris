@@ -204,7 +204,7 @@ let gameMap;
 let gameOver;
 let currentShape;
 let holdShape;
-let nextShape;
+let nextShape = [];
 let score;
 let swapped;
 let initialTwoDArr;
@@ -245,11 +245,11 @@ let swap = () => {
   swapped = true;
   let placeHolder = currentShape;
   if (holdShape.template.length === 0) { // if holdShape is blank (first swap)
-    currentShape = nextShape;
+    currentShape = nextShape.shift();
     holdShape.x = defaultX;
     holdShape.y = 0;
     holdShape = placeHolder;
-    nextShape = getRandomShape();
+    nextShape.push(getRandomShape());
     return;
   }
   else { // holdShape is an actual piece...
@@ -279,10 +279,10 @@ let update = () => {
 
     swapped = false; // if a swap was previously made, allow for swaps again
     deleteCompleteRows();
-    currentShape = nextShape;
+    currentShape = nextShape.shift();
     currentShape.x = defaultX;
     currentShape.y = 0;
-    nextShape = getRandomShape();
+    nextShape.push(getRandomShape());
     if (!currentShape.checkBottom()) {
       gameOver = true;
     }
@@ -372,15 +372,17 @@ let drawSquares = () => {
   }
 };
 
-let drawShape = (shape, ctx, canvas) => {
-  // background
-  ctx.fillStyle = "#bca0dc";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+let drawShape = (shape, ctx, canvas, index) => {
+  if (index == 0) {
+    // background
+    ctx.fillStyle = "#bca0dc";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // border
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 5;
-  ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    // border
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 5;
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+  }
   
   for (let i = 0; i < shape.template.length; i++) {
     for (let j = 0; j < shape.template.length; j++) {
@@ -392,7 +394,7 @@ let drawShape = (shape, ctx, canvas) => {
         imageSquareSize,
         imageSquareSize,
         size * i + 25,
-        size * j + size,
+        size * j + size + (index * 175),
         size,
         size
       );
@@ -429,16 +431,15 @@ let drawGameOver = () => {
   resetButton.style.transform = "translate(-50%, -20%)";
 };
 
-
-
-
 let draw = () => {
   ctx.clearRect(0, 0, gameBoardCanvas.width, gameBoardCanvas.height);
   drawBackground();
   drawSquares();
   drawCurrentTetris();
-  drawShape(holdShape, hctx, holdShapeCanvas);
-  drawShape(nextShape, nctx, nextShapeCanvas);
+  drawShape(holdShape, hctx, holdShapeCanvas, 0);
+  drawShape(nextShape[0], nctx, nextShapeCanvas, 0);
+  drawShape(nextShape[1], nctx, nextShapeCanvas, 1);
+  drawShape(nextShape[2], nctx, nextShapeCanvas, 2);
   drawScore();
   if (gameOver) {
     ctx.fillStyle = "#bca0dc";
@@ -466,7 +467,9 @@ let resetVars = () => {
   gameOver = false;
   currentShape = getRandomShape();
   holdShape = Object.create(new Tetris(0,0,[]));
-  nextShape = getRandomShape();
+  nextShape.push(getRandomShape());
+  nextShape.push(getRandomShape());
+  nextShape.push(getRandomShape());
   gameMap = initialTwoDArr;
 };
 
