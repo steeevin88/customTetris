@@ -3,14 +3,14 @@
   // on certain score thresholds, speed the game up
     // this includes reducing the time to place (?) --> maybe not, at high speeds I think moving pieces around sometimes helps
     // score multipliers --> the higher the level, the higher the point multiplier
+  // "Tetris" appears when a tetris occurs --> similar to how gameOver is displayed, just without the ctx being filled
 // 2. Implement Custom Pieces
   // allow users to choose their own 7 tetrominoes as they play
   // default --> original 7 pieces
-    // allows users to reset/ clear the pieces they piece, left click to select, right click to deselect
-    // allows users to pick the color they want (out of 7...)
-// 3. Create better game over screen  
-  // right now it's just a text wall...
-// 4. Refine gameboard UI
+    // allows users to reset/ clear the pieces they piece, left click to select, click again to deselect
+// 3. Database to display local highscores
+// 4. Create Next Piece Queue
+// 5. Create piece "ghost" for easier piece placement
 
 class Tetris {
   constructor(imageX, imageY, template) {
@@ -292,7 +292,7 @@ let update = () => {
       // Delay before placing the shape
       setTimeout(() => {
         update();
-      }, 10000);
+      }, 20000);
     }
   }
 };
@@ -373,8 +373,14 @@ let drawSquares = () => {
 };
 
 let drawShape = (shape, ctx, canvas) => {
+  // background
   ctx.fillStyle = "#bca0dc";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // border
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 5;
+  ctx.strokeRect(0, 0, canvas.width, canvas.height);
   
   for (let i = 0; i < shape.template.length; i++) {
     for (let j = 0; j < shape.template.length; j++) {
@@ -385,27 +391,46 @@ let drawShape = (shape, ctx, canvas) => {
         shape.imageY,
         imageSquareSize,
         imageSquareSize,
-        size * i,
+        size * i + 25,
         size * j + size,
         size,
         size
       );
+      
     }
   }
 };
 
 let drawScore = () => {
   sctx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
-  sctx.font = "64px Poppins";
+  sctx.font = "64px Impact";
   sctx.fillStyle = "black";
   sctx.fillText(score, 10, 50);
 };
 
+
 let drawGameOver = () => {
-  ctx.font = "64px Poppins";
-  ctx.fillStyle = "black";
-  ctx.fillText("Game Over!", 10, gameBoardCanvas.height / 2);
+  const resetButtonCanvas = document.createElement('canvas');
+  resetButtonCanvas.width = gameBoardCanvas.width;
+  resetButtonCanvas.height = gameBoardCanvas.height;
+  const resetButtonCtx = resetButtonCanvas.getContext('2d');
+
+  document.getElementById("resetButton").classList.remove("hidden");
+  resetButtonCtx.font = "64px Impact";
+  resetButtonCtx.fillStyle = "black";
+  resetButtonCtx.textAlign = "center";
+  resetButtonCtx.fillText("Game Over!", resetButtonCanvas.width/2, resetButtonCanvas.height/2);
+  ctx.drawImage(resetButtonCanvas, 0, 0);
+
+  resetButton.classList.remove("hidden");
+  resetButton.style.position = "absolute";
+  resetButton.style.top = "50%";
+  resetButton.style.left = "50%";
+  resetButton.style.transform = "translate(-50%, -20%)";
 };
+
+
+
 
 let draw = () => {
   ctx.clearRect(0, 0, gameBoardCanvas.width, gameBoardCanvas.height);
@@ -416,6 +441,8 @@ let draw = () => {
   drawShape(nextShape, nctx, nextShapeCanvas);
   drawScore();
   if (gameOver) {
+    ctx.fillStyle = "#bca0dc";
+    ctx.fillRect(0, 0, gameBoardCanvas.width, gameBoardCanvas.height);
     drawGameOver();
   }
 };
@@ -425,6 +452,7 @@ let getRandomShape = () => {
 };
 
 let resetVars = () => {
+  document.getElementById("resetButton").classList.add("hidden");
   initialTwoDArr = [];
   for (let i = 0; i < squareCountY; i++) {
     let temp = [];
@@ -456,8 +484,11 @@ let startGame = () => {
   gameLoop();
   document.getElementById("originalGameButton").disabled = true;
   document.getElementById("originalGameButton").classList.add("hidden");
-  document.getElementById("resetButton").classList.remove("hidden");
   document.getElementsByClassName("startMenu")[0].classList.add("hidden");
+  const columns = document.getElementsByClassName("column")
+  for (let i = 0; i < columns.length; i++) {
+    columns[i].classList.remove("hidden");
+  }
 }
 
 let customPiecesUI = () => {

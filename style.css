@@ -2,6 +2,18 @@ body {
     background-color: #f0ceff;
 }
 
+p {
+    text-align: center;
+    font-size: 200%;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin: 10% 0% 0% 0%;
+}
+
+canvas {
+    align-self: flex-start;
+    margin-bottom: 10px;
+}
+
 .startMenu {
     display: flex;
     justify-content: center;
@@ -15,7 +27,7 @@ body {
     width: 50%;
     background-color: gray; 
     border: none;
-  }
+}
 
 #game {
     display: flex;
@@ -23,46 +35,16 @@ body {
     gap: 1%;
 }
 
-.leftCol {
+.column {
     display: flex;
     flex-direction: column;
-}
-
-.middleCol {
-
-}
-
-.rightCol {
-    display: flex;
-    flex-direction: column;
-}
-
-canvas {
-    align-self: flex-start;
-    margin-bottom: 10px;
-}
-
-#holdShapeCanvas {
-    
-}
-
-#gameBoardCanvas {
-
-}
-
-#nextShapeCanvas {
-    
-}
-
-#scoreCanvas {
-    
 }
 
 #resetButton {
     width: 64px; 
     height: 64px; 
     border-radius: 50%; 
-    background-color: gray; 
+    background-color: black; 
     border: 0px
 }
 
