@@ -157,7 +157,7 @@ const squareCountX = gameBoardCanvas.width / size;
 const squareCountY = gameBoardCanvas.height / size;
 
 // 0 = purple, 24 = blue, 48 = cyan, 72 = green, 96 = yellow, 120 = red, 144 = pink
-const shapes = [
+const defaultShapes = [
   new Tetris(0, 0, [
     [0, 0, 0],
     [1, 1, 1],
@@ -195,6 +195,7 @@ const shapes = [
   ])
 ];
 
+let shapes = [];
 let gameMap;
 let gameOver;
 let ghost;
@@ -208,6 +209,7 @@ let gameBoardLineThickness = 3;
 let defaultX = (squareCountX / 2) - 2;
 let customPiecesUI = document.getElementById("customPiecesUI");
 let tetrominos = [];
+
 // create the 4x4 squares
   for (let i = 0; i < 7; i++) {
     let tetromino = document.createElement('div');
@@ -217,22 +219,20 @@ let tetrominos = [];
       let square = document.createElement('div');
       square.classList.add('square');
       tetromino.appendChild(square);
-      tetrominoArray.push(0); // Initialize all values to 0
+      tetrominoArray.push(0);
     }
     tetromino.classList.add('tetromino')
     customPiecesUI.appendChild(tetromino);
     tetrominos.push(tetrominoArray);
   }
 
-// Add event listener to each square
 const squares = document.querySelectorAll(".square");
 squares.forEach((square, index) => {
   square.addEventListener("click", () => {
     square.classList.toggle("highlighted");
-    let tetrominoIndex = Math.floor(index / 16); // Determine the corresponding tetromino index
-    let squareIndex = index % 16; // Determine the corresponding square index within the tetromino
-
-    // Update the tetrominos array based on the highlighted squares
+    let tetrominoIndex = Math.floor(index / 16);
+    let squareIndex = index % 16;
+    
     if (square.classList.contains("highlighted")) {
       tetrominos[tetrominoIndex][squareIndex] = 1;
     } else {
@@ -240,7 +240,6 @@ squares.forEach((square, index) => {
     }
   });
 });
-
 
 let gameLoop = () => {
   setInterval(update, 1000 / gameSpeed);
@@ -542,7 +541,22 @@ window.addEventListener("keydown", (event) => {
 });
 
 let startGame = () => {
-  
+  for (let i = 0; i < tetrominos.length; i++) {
+    let piece = tetrominos[i]
+    let template = [];
+    let row = [];
+    let empty = true;
+    for (let j = 0; j < 16; j++) {
+      if (piece[j] == 1) empty = false;
+      row.push(piece[j]);
+      if (row.length === 4) {
+        template.push(row);
+        row = [];
+      }
+    }
+    if (!empty) shapes.push(new Tetris(0,0, template));
+  }
+  if (shapes.length == 0) shapes = defaultShapes;
   resetVars();
   gameLoop();
   document.getElementById("originalGameButton").disabled = true;

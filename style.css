@@ -51,6 +51,7 @@ p {
     width: 30%;
     background-color: gray; 
     border: none;
+    cursor: pointer;
 }
 
 #game {
