@@ -1,16 +1,3 @@
-// Things to do
-// 1. Implement Level/ Speed System
-  // on certain score thresholds, speed the game up
-    // this includes reducing the time to place (?) --> maybe not, at high speeds I think moving pieces around sometimes helps
-    // score multipliers --> the higher the level, the higher the point multiplier
-  // "Tetris" appears when a tetris occurs --> similar to how gameOver is displayed, just without the ctx being filled
-// 2. Implement Custom Pieces
-  // allow users to choose their own 7 tetrominoes as they play
-  // default --> original 7 pieces
-    // allows users to reset/ clear the pieces they piece, left click to select, click again to deselect
-// 3. Database to display local highscores
-// 4. Create piece "ghost" for easier piece placement
-
 class Tetris {
   constructor(imageX, imageY, template) {
     this.imageY = imageY;
@@ -40,6 +27,7 @@ class Tetris {
   getTruncedPosition() {
     return { x: Math.trunc(this.x), y: Math.trunc(this.y) };
   }
+
   checkLeft() {
     for (let i = 0; i < this.template.length; i++) {
       for (let j = 0; j < this.template.length; j++) {
@@ -49,7 +37,6 @@ class Tetris {
         if (realX - 1 < 0) {
           return false;
         }
-
         if (gameMap[realY][realX - 1].imageX != -1) return false;
       }
     }
@@ -65,7 +52,6 @@ class Tetris {
         if (realX + 1 >= squareCountX) {
           return false;
         }
-
         if (gameMap[realY][realX + 1].imageX != -1) return false;
       }
     }
@@ -113,7 +99,6 @@ class Tetris {
     for (let i = 0; i < this.template.length; i++) {
       rotatedTemplate[i] = this.template[i].slice();
     }
-  
     let n = this.template.length;
     for (let layer = 0; layer < n / 2; layer++) {
       let first = layer;
@@ -127,7 +112,6 @@ class Tetris {
         rotatedTemplate[last - offset][first] = top; // left = top
       }
     }
-  
     for (let i = 0; i < rotatedTemplate.length; i++) {
       for (let j = 0; j < rotatedTemplate.length; j++) {
         if (rotatedTemplate[i][j] == 0) continue;
@@ -138,10 +122,8 @@ class Tetris {
         }
       }
     }
-  
     if (!this.checkCollision(rotatedTemplate)) this.template = rotatedTemplate;
   }
-  
 }
 
 const imageSquareSize = 24;
@@ -238,30 +220,6 @@ let deleteCompleteRows = () => {
   }
 };
 
-let swap = () => {
-  if (swapped) { // if user already swapped, don't allow another swap
-    return;
-  }
-  swapped = true;
-  let placeHolder = currentShape;
-  if (holdShape.template.length === 0) { // if holdShape is blank (first swap)
-    currentShape = nextShape.shift();
-    holdShape.x = defaultX;
-    holdShape.y = 0;
-    holdShape = placeHolder;
-    nextShape.push(getRandomShape());
-    return;
-  }
-  else { // holdShape is an actual piece...
-    currentShape = holdShape;
-    currentShape.x = defaultX;
-    currentShape.y = 0;
-    holdShape.x = defaultX;
-    holdShape.y = 0;
-    holdShape = placeHolder;
-  }
-}
-
 let update = () => {
   if (gameOver) return;
   if (currentShape.checkBottom()) {
@@ -297,31 +255,27 @@ let update = () => {
   }
 };
 
-let drawGhost = () => {
-  ghost = new Tetris(currentShape.imageX, currentShape.imageY, currentShape.template);
-  ghost.x = currentShape.x;
-  ghost.y = currentShape.y; 
-
-  while (currentShape.checkBottom() || ghost.checkBottom()) {
-    ghost.y += 1;
-    if (currentShape.checkCollision(currentShape.template) || ghost.checkCollision(ghost.template)) {
-      ghost.y -= 1;
-      break;
-    }
+let swap = () => {
+  if (swapped) { // if user already swapped, don't allow another swap
+    return;
   }
-
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // Set the fill style to translucent white
-
-  for (let i = 0; i < currentShape.template.length; i++) {
-    for (let j = 0; j < currentShape.template.length; j++) {
-      if (ghost.template[i][j] == 0) continue;
-      ctx.fillRect(
-        Math.trunc(ghost.x) * size + size * i,
-        Math.trunc(ghost.y) * size + size * j,
-        size,
-        size
-      );
-    }
+  swapped = true;
+  let placeHolder = currentShape;
+  if (holdShape.template.length === 0) { // if holdShape is blank (first swap)
+    currentShape = nextShape.shift();
+    holdShape.x = defaultX;
+    holdShape.y = 0;
+    holdShape = placeHolder;
+    nextShape.push(getRandomShape());
+    return;
+  }
+  else { // holdShape is an actual piece...
+    currentShape = holdShape;
+    currentShape.x = defaultX;
+    currentShape.y = 0;
+    holdShape.x = defaultX;
+    holdShape.y = 0;
+    holdShape = placeHolder;
   }
 }
 
@@ -400,7 +354,35 @@ let drawSquares = () => {
   }
 };
 
-let drawShape = (shape, ctx, canvas, index) => {
+let drawGhost = () => {
+  ghost = new Tetris(currentShape.imageX, currentShape.imageY, currentShape.template);
+  ghost.x = currentShape.x;
+  ghost.y = currentShape.y; 
+
+  while (currentShape.checkBottom() || ghost.checkBottom()) {
+    ghost.y += 1;
+    if (currentShape.checkCollision(currentShape.template) || ghost.checkCollision(ghost.template)) {
+      ghost.y -= 1;
+      break;
+    }
+  }
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // Set the fill style to translucent white
+
+  for (let i = 0; i < currentShape.template.length; i++) {
+    for (let j = 0; j < currentShape.template.length; j++) {
+      if (ghost.template[i][j] == 0) continue;
+      ctx.fillRect(
+        Math.trunc(ghost.x) * size + size * i,
+        Math.trunc(ghost.y) * size + size * j,
+        size,
+        size
+      );
+    }
+  }
+}
+
+let drawShape = (shape, ctx, canvas, index) => { // for hold + next containers
   if (index == 0) {
     // background
     ctx.fillStyle = "#bca0dc";
@@ -438,7 +420,6 @@ let drawScore = () => {
   sctx.fillText(score, 10, 50);
 };
 
-
 let drawGameOver = () => {
   const resetButtonCanvas = document.createElement('canvas');
   resetButtonCanvas.width = gameBoardCanvas.width;
@@ -449,7 +430,7 @@ let drawGameOver = () => {
   resetButtonCtx.font = "64px Impact";
   resetButtonCtx.fillStyle = "black";
   resetButtonCtx.textAlign = "center";
-  resetButtonCtx.fillText("Game Over!", resetButtonCanvas.width/2, resetButtonCanvas.height/2);
+  resetButtonCtx.fillText("GAME OVER!", resetButtonCanvas.width/2, resetButtonCanvas.height/2.5);
   ctx.drawImage(resetButtonCanvas, 0, 0);
 
   resetButton.classList.remove("hidden");
@@ -521,8 +502,4 @@ let startGame = () => {
   for (let i = 0; i < columns.length; i++) {
     columns[i].classList.remove("hidden");
   }
-}
-
-let customPiecesUI = () => {
-
 }
