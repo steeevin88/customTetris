@@ -1,3 +1,17 @@
+// Things to do
+// 1. Implement Level/ Speed System
+  // on certain score thresholds, speed the game up
+    // this includes reducing the time to place (?) --> maybe not, at high speeds I think moving pieces around sometimes helps
+    // score multipliers --> the higher the level, the higher the point multiplier
+  // "Tetris" appears when a tetris occurs --> similar to how gameOver is displayed, just without the ctx being filled
+// 2. Implement Custom Pieces
+  // allow users to choose their own 7 tetrominoes as they play
+  // default --> original 7 pieces
+    // allows users to reset/ clear the pieces they piece, left click to select, click again to deselect
+// 3. Database to display local highscores
+// 4. Change set timeout 
+  // if a move occurs, add a little bit of extra time/ reset the timeout
+
 class Tetris {
   constructor(imageX, imageY, template) {
     this.imageY = imageY;
@@ -192,6 +206,41 @@ let swapped;
 let initialTwoDArr;
 let gameBoardLineThickness = 3;
 let defaultX = (squareCountX / 2) - 2;
+let customPiecesUI = document.getElementById("customPiecesUI");
+let tetrominos = [];
+// create the 4x4 squares
+  for (let i = 0; i < 7; i++) {
+    let tetromino = document.createElement('div');
+    let tetrominoArray = [];
+    
+    for (let j = 0; j < 16; j++) {
+      let square = document.createElement('div');
+      square.classList.add('square');
+      tetromino.appendChild(square);
+      tetrominoArray.push(0); // Initialize all values to 0
+    }
+    tetromino.classList.add('tetromino')
+    customPiecesUI.appendChild(tetromino);
+    tetrominos.push(tetrominoArray);
+  }
+
+// Add event listener to each square
+const squares = document.querySelectorAll(".square");
+squares.forEach((square, index) => {
+  square.addEventListener("click", () => {
+    square.classList.toggle("highlighted");
+    let tetrominoIndex = Math.floor(index / 16); // Determine the corresponding tetromino index
+    let squareIndex = index % 16; // Determine the corresponding square index within the tetromino
+
+    // Update the tetrominos array based on the highlighted squares
+    if (square.classList.contains("highlighted")) {
+      tetrominos[tetrominoIndex][squareIndex] = 1;
+    } else {
+      tetrominos[tetrominoIndex][squareIndex] = 0;
+    }
+  });
+});
+
 
 let gameLoop = () => {
   setInterval(update, 1000 / gameSpeed);
@@ -493,11 +542,12 @@ window.addEventListener("keydown", (event) => {
 });
 
 let startGame = () => {
+  
   resetVars();
   gameLoop();
   document.getElementById("originalGameButton").disabled = true;
   document.getElementById("originalGameButton").classList.add("hidden");
-  document.getElementsByClassName("startMenu")[0].classList.add("hidden");
+  document.getElementsByClassName('startMenu')[0].classList.add("hidden");
   const columns = document.getElementsByClassName("column")
   for (let i = 0; i < columns.length; i++) {
     columns[i].classList.remove("hidden");
