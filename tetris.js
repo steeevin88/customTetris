@@ -9,8 +9,7 @@
   // default --> original 7 pieces
     // allows users to reset/ clear the pieces they piece, left click to select, click again to deselect
 // 3. Database to display local highscores
-// 4. Create Next Piece Queue
-// 5. Create piece "ghost" for easier piece placement
+// 4. Create piece "ghost" for easier piece placement
 
 class Tetris {
   constructor(imageX, imageY, template) {
@@ -202,6 +201,7 @@ const shapes = [
 
 let gameMap;
 let gameOver;
+let ghost;
 let currentShape;
 let holdShape;
 let nextShape = [];
@@ -296,6 +296,34 @@ let update = () => {
     }
   }
 };
+
+let drawGhost = () => {
+  ghost = new Tetris(currentShape.imageX, currentShape.imageY, currentShape.template);
+  ghost.x = currentShape.x;
+  ghost.y = currentShape.y; 
+
+  while (currentShape.checkBottom() || ghost.checkBottom()) {
+    ghost.y += 1;
+    if (currentShape.checkCollision(currentShape.template) || ghost.checkCollision(ghost.template)) {
+      ghost.y -= 1;
+      break;
+    }
+  }
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // Set the fill style to translucent white
+
+  for (let i = 0; i < currentShape.template.length; i++) {
+    for (let j = 0; j < currentShape.template.length; j++) {
+      if (ghost.template[i][j] == 0) continue;
+      ctx.fillRect(
+        Math.trunc(ghost.x) * size + size * i,
+        Math.trunc(ghost.y) * size + size * j,
+        size,
+        size
+      );
+    }
+  }
+}
 
 let skip = () => {
   while (currentShape.checkBottom()) {
@@ -394,7 +422,7 @@ let drawShape = (shape, ctx, canvas, index) => {
         imageSquareSize,
         imageSquareSize,
         size * i + 25,
-        size * j + size + (index * 175),
+        size * j + size + (index * 200),
         size,
         size
       );
@@ -441,6 +469,7 @@ let draw = () => {
   drawShape(nextShape[1], nctx, nextShapeCanvas, 1);
   drawShape(nextShape[2], nctx, nextShapeCanvas, 2);
   drawScore();
+  drawGhost();
   if (gameOver) {
     ctx.fillStyle = "#bca0dc";
     ctx.fillRect(0, 0, gameBoardCanvas.width, gameBoardCanvas.height);
