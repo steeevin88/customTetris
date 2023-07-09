@@ -1,15 +1,6 @@
 // Things to do
-// 1. Implement Level/ Speed System
-  // on certain score thresholds, speed the game up
-    // this includes reducing the time to place (?) --> maybe not, at high speeds I think moving pieces around sometimes helps
-    // score multipliers --> the higher the level, the higher the point multiplier
-  // "Tetris" appears when a tetris occurs --> similar to how gameOver is displayed, just without the ctx being filled
-// 2. Implement Custom Pieces
-  // allow users to choose their own 7 tetrominoes as they play
-  // default --> original 7 pieces
-    // allows users to reset/ clear the pieces they piece, left click to select, click again to deselect
-// 3. Database to display local highscores
-// 4. Change set timeout 
+// 1. Database to display local highscores
+// 2. Change set timeout 
   // if a move occurs, add a little bit of extra time/ reset the timeout
 
 class Tetris {
@@ -143,7 +134,6 @@ class Tetris {
 const imageSquareSize = 24;
 const size = 40;
 const framePerSecond = 24;
-const gameSpeed = 2;
 const gameBoardCanvas = document.getElementById("gameBoardCanvas");
 const holdShapeCanvas = document.getElementById("holdShapeCanvas");
 const nextShapeCanvas = document.getElementById("nextShapeCanvas");
@@ -198,6 +188,8 @@ const defaultShapes = [
 let shapes = [];
 let gameMap;
 let gameOver;
+let gameSpeed = 1;
+let threshold = 10000;
 let ghost;
 let currentShape;
 let holdShape;
@@ -269,6 +261,11 @@ let deleteCompleteRows = () => {
 };
 
 let update = () => {
+  if (score > threshold) {
+    threshold *= 2;
+    gameSpeed *= 1.75;
+    gameLoop();
+  }
   if (gameOver) return;
   if (currentShape.checkBottom()) {
     currentShape.y += 1;
@@ -298,7 +295,7 @@ let update = () => {
       // Delay before placing the shape
       setTimeout(() => {
         update();
-      }, 20000);
+      }, 1000000);
     }
   }
 };
@@ -463,9 +460,9 @@ let drawShape = (shape, ctx, canvas, index) => { // for hold + next containers
 
 let drawScore = () => {
   sctx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
-  sctx.font = "64px Impact";
+  sctx.font = "48px Impact";
   sctx.fillStyle = "black";
-  sctx.fillText(score, 10, 50);
+  sctx.fillText(score, 0, 50);
 };
 
 let drawGameOver = () => {
@@ -475,7 +472,7 @@ let drawGameOver = () => {
   const resetButtonCtx = resetButtonCanvas.getContext('2d');
 
   document.getElementById("resetButton").classList.remove("hidden");
-  resetButtonCtx.font = "64px Impact";
+  resetButtonCtx.font = "30px 'Press Start 2P'";
   resetButtonCtx.fillStyle = "black";
   resetButtonCtx.textAlign = "center";
   resetButtonCtx.fillText("GAME OVER!", resetButtonCanvas.width/2, resetButtonCanvas.height/2.5);
@@ -541,6 +538,7 @@ window.addEventListener("keydown", (event) => {
 });
 
 let startGame = () => {
+  let color = 144;
   for (let i = 0; i < tetrominos.length; i++) {
     let piece = tetrominos[i]
     let template = [];
@@ -554,7 +552,10 @@ let startGame = () => {
         row = [];
       }
     }
-    if (!empty) shapes.push(new Tetris(0,0, template));
+    if (!empty) {
+      shapes.push(new Tetris(0, color, template));
+      color -= 24;
+    }
   }
   if (shapes.length == 0) shapes = defaultShapes;
   resetVars();
