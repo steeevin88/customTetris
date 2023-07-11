@@ -13,3 +13,5 @@ A parody of my favorite classroom pastime: [Tetris](tetris.com/us)! The familiar
 - ⬇️ to drop the current piece by one layer
 - "C" to hold the current piece
 - "Spacebar" to immediately drop the current piece to its ghost image
+- 
+![image](https://github.com/steeevin88/customTetris/assets/59713070/461c9130-eb76-412b-9e3f-bd3b97ad85bf)
