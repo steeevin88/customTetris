@@ -1,5 +1,5 @@
-# Polynomino Frenzy 😵 - A take on classical Tetris
-A parody of my favorite classroom pastime: [Tetris](https://tetris.com)! The familiar gameplay mechanics are implemented with the option for players to create and use their own polyominoes to mirror the experience of the best-selling game.
+# Polyomino Frenzy 😵 - A take on classical Tetris
+A parody of my favorite classroom pastime: [Tetris](https://tetris.com)! The familiar gameplay mechanics are implemented with the option for players to create and use their own polyominoes to mirror the experience of the original best-seller.
 
 ## How To Play 🕹
 ![image](https://github.com/steeevin88/customTetris/assets/59713070/35a441b4-37d5-4bd4-8241-3503a2a57ff0)
