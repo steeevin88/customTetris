@@ -13,9 +13,9 @@ body {
 
 .rainbow-text {
     background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
     -webkit-text-stroke: 2px black;
 }
 

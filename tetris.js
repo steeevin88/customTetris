@@ -1,8 +1,3 @@
-// Things to do
-// 1. Database to display local highscores
-// 2. Change set timeout 
-  // if a move occurs, add a little bit of extra time/ reset the timeout
-
 class Tetris {
   constructor(imageX, imageY, template) {
     this.imageY = imageY;
@@ -201,6 +196,8 @@ let gameBoardLineThickness = 3;
 let defaultX = (squareCountX / 2) - 2;
 let customPiecesUI = document.getElementById("customPiecesUI");
 let tetrominos = [];
+let updateInterval;
+let drawInterval;
 
 // create the 4x4 squares
   for (let i = 0; i < 7; i++) {
@@ -234,8 +231,8 @@ squares.forEach((square, index) => {
 });
 
 let gameLoop = () => {
-  setInterval(update, 1000 / gameSpeed);
-  setInterval(draw, 1000 / framePerSecond);
+  updateInterval = setInterval(update, 1000 / gameSpeed);
+  drawInterval = setInterval(draw, 1000 / framePerSecond);
 };
 
 let deleteCompleteRows = () => {
@@ -246,7 +243,6 @@ let deleteCompleteRows = () => {
       if (t[j].imageX == -1) isComplete = false;
     }
     if (isComplete) {
-      console.log("complete row");
       score += 1000;
       for (let k = i; k > 0; k--) {
         gameMap[k] = gameMap[k - 1];
@@ -264,6 +260,8 @@ let update = () => {
   if (score > threshold) {
     threshold *= 2;
     gameSpeed *= 1.75;
+    clearInterval(updateInterval);
+    clearInterval(drawInterval);
     gameLoop();
   }
   if (gameOver) return;
@@ -508,6 +506,8 @@ let getRandomShape = () => {
 };
 
 let resetVars = () => {
+  clearInterval(updateInterval);
+  clearInterval(drawInterval);
   document.getElementById("resetButton").classList.add("hidden");
   initialTwoDArr = [];
   for (let i = 0; i < squareCountY; i++) {
@@ -518,6 +518,8 @@ let resetVars = () => {
     initialTwoDArr.push(temp);
   }
   score = 0;
+  gameSpeed = 1;
+  threshold = 10000;
   swapped = false;
   gameOver = false;
   currentShape = getRandomShape();
@@ -526,6 +528,7 @@ let resetVars = () => {
   nextShape.push(getRandomShape());
   nextShape.push(getRandomShape());
   gameMap = initialTwoDArr;
+  gameLoop();
 };
 
 window.addEventListener("keydown", (event) => {
@@ -559,7 +562,6 @@ let startGame = () => {
   }
   if (shapes.length == 0) shapes = defaultShapes;
   resetVars();
-  gameLoop();
   document.getElementById("originalGameButton").disabled = true;
   document.getElementById("originalGameButton").classList.add("hidden");
   document.getElementsByClassName('startMenu')[0].classList.add("hidden");
